@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+VTL
+{% endblock %}
+
+{% block body %}
+<form class="contract_input" method="POST">
+    <p>Обновить данные по оплате</p>
+    <br/><br/>
+    <input class="submit" type="submit" value="Обновить">
+    <br/>
+    
+    <a href="{{url_for('index')}}">Вернуться на главную</a>
+</form>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+VTL
+{% endblock %}
+
+{% block body %}
+<form class="contract_input" method="POST">
+    <input type="text" name="contract_num" placeholder="Номер контракта" size="30"><br/>
+    <input type="text" name="name_person" placeholder="Имя" size="30"><br/>
+    <input type="text" name="address" placeholder="Адрес" size="30"><br/>
+    <input type="text" name="house_num" placeholder="Номер дома" size="30"><br/>
+    <input type="text" name="apart_num" placeholder="Номер квартиры" size="30"><br/>
+    <input type="text" name="phone_num" placeholder="Номер телефона" size="30"><br/>
+    <input type="text" name="inn" placeholder="Инн" size="30"><br/>
+    <input type="text" name="comment" placeholder="Комментарии" size="30"><br/>
+    <input type="text" name="connect_date" placeholder="Дата подключения" size="30"><br/>
+    <input type="text" name="disconnect_date" placeholder="Дата отключения" size="30"><br/>
+    <br/>
+    <input type="radio" name="add_pay" id="add_pay" value="add_pay" checked/>
+    <label for="add_pay">Выводить долг</label>
+    <br/>
+    <input type="radio" name="add_pay" id="not_add_pay" value="not_add_pay"/>
+    <label for="dewey">Не выводить долг</label>
+    <br/>
+    <input class="submit" type="submit" value="Запросить">
+    <br/>
+    <a href="{{url_for('index')}}">Вернуться на главную</a>
+</form>
+{% endblock %}

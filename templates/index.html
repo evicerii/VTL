@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+VTL
+{% endblock %}
+
+{% block body %}
+<a href="{{url_for('member_data')}}">Получить информацию о клиентах</a>
+<a href="{{url_for('bank_load')}}">Загрузить банковские данные</a>
+<a href="{{url_for('users')}}">Обновить список пользователей</a>
+{% endblock %}
