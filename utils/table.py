@@ -45,7 +45,11 @@ class TableExternalInteractions(SuperTableClass):
         '''
         vtl_table = self.metadata_obj.tables[self.table_name]
         excel_sheet = pd.read_excel(self.excel_link, sheet_name=self.excel_sheet_link)
-
+        excel_sheet.columns = ['contract', 'name',
+                    'address', 'house_number',
+                    'apart_num', 'phone',
+                    'inn', 'comment',
+                    'connect_date', 'disconnect_date']
         table_contracts = excel_sheet['contract'].tolist()
         with sync_engine.connect() as conn:
             db_table = pd.read_sql_table(self.table_name, conn)
@@ -110,19 +114,24 @@ class TableInternalInteractions(SuperTableClass):
         session.close()
         return TableInternalInteractions(self.table_name,
                 payment_amount_list = payment_amount_list), payment_amount_list
-    def search_by_data(self, data):
+    def search_by_data(self, data_strict, data_like):
         '''
         search and return obj with pay turple
         '''
         vtl_table = self.metadata_obj.tables[self.table_name]
         session = Session(sync_engine)
         final_res = session.query(vtl_table)
-        req_list = ('contract', 'name',
+        req_contract = 'contract'
+        req_list = ('name',
                      'address', 'house_number',
                        'apart_num', 'phone',
                          'inn', 'comment',
                            'connect_date', 'disconnect_date')
-        for count, req in enumerate(data):
+        if data_strict != '':
+            req_res = (sa.select(vtl_table).where(
+                    getattr(vtl_table.c, req_contract) == data_strict))
+            final_res = final_res.intersect(req_res)
+        for count, req in enumerate(data_like):
             if req != '':
                 req_res = (sa.select(vtl_table).where(
                     getattr(vtl_table.c, req_list[count]).like(f'%{req}%')
@@ -131,24 +140,6 @@ class TableInternalInteractions(SuperTableClass):
         final_results = final_res.all()
         session.close()
         return TableInternalInteractions(self.table_name), final_results
-    def add_new_value(self, collumn, contract, date):
-        '''
-        insert new value into table
-        '''
-        vtl_table = self.metadata_obj.tables[self.table_name]
-        session = Session(sync_engine)
-        stmt = sa.update(vtl_table).where(vtl_table.c.contract == contract).values({collumn:date})
-        session.execute(stmt)
-        session.commit()
-        session.close()
-    def read_return_table(self, col_name, col_value):
-        '''
-        read and return data from table 
-        '''
-        with sync_engine.connect() as conn:
-            df = pd.read_sql_table(self.table_name, conn)
-            res = df[df[col_name] == col_value]
-            return res
 class TableCalculationInteraction(TableInternalInteractions):
     '''
     calculate price for active month
@@ -254,7 +245,7 @@ class TableCalculationInteraction(TableInternalInteractions):
         paid_sum=self.paid_sum(contract)
         service_sum=self.price_per_service(contract, need_table)
         res_sum=service_sum-paid_sum
-        return res_sum
+        return f"{res_sum:.2f}"
     @staticmethod
     def active_month(connect_date, disconnect_date):
         '''

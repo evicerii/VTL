@@ -5,3 +5,5 @@
 /excel_logs
 /Temp
 /venv
+/utils/__pycache__
+/pay_list.xlsx
